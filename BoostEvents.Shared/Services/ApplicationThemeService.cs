@@ -28,5 +28,9 @@ public class ApplicationThemeService : IApplicationTheme
         };
         NotifyStateChanged();
     }
-    
+
+    public void ToggleDetails(Main.DetailsLayout layout)
+    {
+        throw new NotImplementedException();
+    }
 }
