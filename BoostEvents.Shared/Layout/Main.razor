@@ -1,0 +1,37 @@
+
+<main class="grow flex bg-@Theme.Settings.Colors.LightBody border border-@Theme.Settings.Colors.LightBorder dark:border-@Theme.Settings.Colors.DarkBorder border-t-0 rounded-tl-none rounded-tr-none lg:shadow-xs dark:bg-@Theme.Settings.Colors.DarkBody max-h-[calc(100vh-4rem)] overflow-y-scroll">
+    <div class="grow max-w-full @mainCss">
+        @ChildContent
+    </div>
+    @if (DetailsOpen)
+    {
+        <MainDetails Css="@mainDetailsCss" />
+    }
+</main>
+
+@code {
+    [Parameter] public RenderFragment? ChildContent { get; set; }
+    
+    [Parameter] public bool DetailsOpen { get; set; }
+
+    [Parameter] public DetailsLayout DetailsLayoutType { get; set; } = DetailsLayout.Closed;
+
+    string mainCss = string.Empty;
+    string mainDetailsCss = string.Empty;
+
+    protected override void OnParametersSet()
+    { 
+        var css = ComponentBuilder.BuildMainCSS(DetailsLayoutType, DetailsOpen);
+        mainCss = css["MainCss"];
+        mainDetailsCss = css["MainDetailsCss"];
+    }
+
+    public enum DetailsLayout
+    {
+        Open,
+        OpenPopUp,
+        Closed
+    }
+    
+    
+}

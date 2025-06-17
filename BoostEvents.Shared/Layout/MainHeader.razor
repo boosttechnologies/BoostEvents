@@ -1,0 +1,29 @@
+@inject NavigationManager NavigationManager
+
+<header class="flex justify-between sticky top-0 pt-2 pb-3 px-5 bg-@Theme.Settings.Colors.LightBody border-t-transparent dark:border-t-transparent border border-@Theme.Settings.Colors.LightBorder dark:border-@Theme.Settings.Colors.DarkBorder rounded-bl-none rounded-br-none lg:shadow-xs dark:bg-@Theme.Settings.Colors.DarkBody">
+    <ThemeToggle/>
+    <SearchToggle/>
+    <Button
+        LeftIconClass="fa-ellipsis-vertical"
+        DropdownItems="GetDropdownItems()"
+        DropdownPosition="Button.ButtonDropdownPosition.InsetBottomRight"
+        Color="ComponentStyle.ColorScheme.TransparentSecondary"
+        KillIconRight="true"/>
+</header>
+
+@code {
+
+    private List<Button.DropdownItem> GetDropdownItems()
+    {
+        return
+        [
+            new Button.DropdownItem("Settings", () => Task.Run(() => NavigationManager.NavigateTo("/settings"))),
+            new Button.DropdownItem("Settings", () => Task.Run(() => NavigationManager.NavigateTo("/settings"))),
+            new Button.DropdownItem("Settings", () => Task.Run(() => NavigationManager.NavigateTo("/settings"))),
+            new Button.DropdownItem("Settings", () => Task.Run(() => NavigationManager.NavigateTo("/settings"))),
+            
+        ];
+    }
+    
+
+}

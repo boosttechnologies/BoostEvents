@@ -1,0 +1,20 @@
+<div class="flex-none rounded-full p-1.5 @css">
+    <div class="size-3 rounded-full bg-current"></div>
+</div>
+@*<div class="flex-none rounded-full p-1.5 text-green-400 bg-green-400/10">
+    <div class="size-3 rounded-full bg-current"></div>
+</div>
+<div class="flex-none rounded-full p-1.5 text-rose-400 bg-rose-400/10">
+    <div class="size-3 rounded-full bg-current"></div>
+</div>*@
+
+@code {
+    
+    [Parameter] public ComponentStyle.ColorScheme Color { get; set; }
+    private string css = string.Empty;
+    
+    protected override void OnInitialized()
+    {
+        css = ComponentBuilder.BuildIndicatorCss(Color);
+    }
+}

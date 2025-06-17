@@ -1,0 +1,16 @@
+<div class="rounded-full flex-none py-3 px-4 text-xs font-medium ring-1 ring-inset @css">@Title</div>
+
+
+@code {
+    
+    [Parameter] public ComponentStyle.ColorScheme Color { get; set; }
+    [Parameter] public string Title { get; set; } = string.Empty;
+
+    private string css = string.Empty;
+
+    protected override void OnInitialized()
+    {
+        css = ComponentBuilder.BuildBadgeCss(Color);
+    }
+
+}

@@ -1,0 +1,32 @@
+@using BoostEvents.Shared.Layout
+@using Microsoft.Extensions.Logging
+@inject ILogger<ThemeToggle> Log
+
+<Button
+    OnClick="ToggleScheme"
+    LeftIconClass="@ToggleIconClass"
+    Color="ComponentStyle.ColorScheme.TransparentSecondary"/>
+
+@code {
+    
+    [CascadingParameter] 
+    public required MainLayout Layout { get; set; }
+
+    private string ToggleIconClass { get; set; } = "fa-moon-stars";
+
+    protected override void OnParametersSet()
+    {
+        ToggleIconClass = Theme.Settings.Mode switch
+        {
+            // Set to light if light mode
+            ApplicationTheme.ColorMode.Light => "fa-moon-stars",
+            ApplicationTheme.ColorMode.Dark => "fa-sun",
+            _ => "fa-moon-stars"
+        };
+    }
+
+    private void ToggleScheme()
+    {
+        Theme.ToggleColorScheme();
+    }
+}

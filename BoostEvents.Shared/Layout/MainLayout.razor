@@ -1,0 +1,36 @@
+﻿@inherits LayoutComponentBase
+@inject IApplicationTheme Theme
+
+<CascadingValue Value="@this">
+    <div id="theme-wrapper" class="mode @Theme.Settings.Mode.ToString().ToLower()">
+        <div id="main-wrapper" class="text-black dark:text-white/80 bg-@Theme.Settings.Colors.LightBackground dark:bg-@Theme.Settings.Colors.DarkBackground">
+            <Navigation/>
+            <div class="min-h-screen flex flex-col lg:pl-64">
+                <MainHeader/>
+                <Main DetailsOpen="@Theme.DetailsOpen" DetailsLayoutType="@Theme.DetailsLayout">
+                    @Body
+                </Main>
+            </div>
+        </div>
+    </div>
+</CascadingValue>
+
+@code 
+{
+    protected override void OnInitialized()
+    {
+        // Subscribe to the service event
+        Theme.OnChange += HandleThemeChange;
+    }
+    
+    private void HandleThemeChange()
+    {
+        InvokeAsync(StateHasChanged);
+    }
+    
+    public void Dispose()
+    {
+        Theme.OnChange -= HandleThemeChange;
+    }
+}
+

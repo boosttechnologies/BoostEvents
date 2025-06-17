@@ -1,0 +1,48 @@
+﻿@using BoostEvents.Shared.Layout
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <base href="/"/>
+
+    <link rel="stylesheet" href="_content/BoostEvents.Shared/app.css"/>
+    <link rel="stylesheet" href="BoostEvents.Web.styles.css"/>
+    <link rel="icon" type="image/png" href="_content/BoostEvents.Shared/favicon.png"/>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+
+    <link href="_content/BoostEvents.Shared/fontawesome/css/fontawesome.css" rel="stylesheet" />
+    <link href="_content/BoostEvents.Shared/fontawesome/css/solid.css" rel="stylesheet" />
+    <link href="_content/BoostEvents.Shared/fontawesome/css/duotone.css" rel="stylesheet" />
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        body: ['"Inter"', "sans-serif"],
+                    },
+                    colors: {
+                        DarkBackground: '#0f1624',  // Custom blue color (hex)
+                        DarkBody: '#111828',  // Custom red color (RGB)
+                        LightBackground: '#e2e4e9',  // Custom blue color (hex)
+                        LightBody: '#f1f1f4',  // Custom red color (RGB)
+                    },
+                },
+            },
+        }
+    </script>
+    <HeadOutlet @rendermode="InteractiveAuto"/>
+</head>
+<body class="h-full font-body max-h-screen overflow-y-hidden">
+    <Routes @rendermode="InteractiveAuto"/>
+    <script src="_framework/blazor.web.js"></script>
+</body>
+</html>
+
+

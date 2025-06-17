@@ -1,0 +1,18 @@
+<div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-2 @Css">
+    <dt class="text-sm/6 font-medium text-gray-500 @TitleCss">@Title</dt>
+    <dd class="text-xs font-medium text-gray-700 @ChangeCss">@Change</dd>
+    <dd class="w-full flex-none text-2xl/10 font-medium tracking-tight @TotalCss">@Total</dd>
+</div>
+
+
+@*border-t border-gray-900/5 first:border-0 sm:border-l lg:border-l-@Theme.Settings.Colors.LightBorder dark:lg:border-l-@Theme.Settings.Colors.DarkBorder*@
+@code 
+{
+    [Parameter] public required string Title { get; set; }
+    [Parameter] public string? Change { get; set; }
+    [Parameter] public required string Total { get; set; }
+    [Parameter] public string TitleCss { get; set; } = string.Empty;
+    [Parameter] public string ChangeCss { get; set; } = string.Empty;
+    [Parameter] public string TotalCss { get; set; } = string.Empty;
+    [Parameter] public string Css { get; set; } = string.Empty;
+}

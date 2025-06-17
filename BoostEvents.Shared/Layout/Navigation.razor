@@ -1,0 +1,156 @@
+@using BoostEvents.Shared.Interfaces
+<!-- Static sidebar for desktop -->
+@inject NavigationManager NavigationManager
+
+<div class="main-menu hidden lg:fixed lg:inset-y-0 lg:left-0 lg:z-50 lg:block lg:w-64 lg:overflow-y-visible">
+    <div class="flex flex-col h-full justify-between">
+        <div>
+            <div id="organization-toggle" class="flex flex-col shrink-0 items-span justify-center px-3 pb-0 pb-3 border-t border-t-transparent border-b border-b-@Theme.Settings.Colors.LightBorder dark:border-b-@Theme.Settings.Colors.DarkBorder mt-2">
+                <Button
+                    Text="Alberta Food and Be..."
+                    LeftIconClass="fa-building"
+                    DropdownItems="GetDropdownItems()"
+                    OnDropdownItemSelected="HandleDropdownSelection"
+                    DropdownPosition="Button.ButtonDropdownPosition.TopRight"
+                    Color="ComponentStyle.ColorScheme.Transparent" />
+            </div>
+            <nav id="main-menu" class="mt-8 p-3 px-3">
+                <ul role="list" class="flex flex-col items-span space-y-1">
+                    @foreach (var item in Items)
+                    {
+                        <Button
+                            Text="@item.Title"
+                            LeftIconClass="@item.SvgString"
+                            Url="@item.Url"
+                            Color="ComponentStyle.ColorScheme.Transparent" />
+                    }
+                </ul>
+            </nav>
+            <div class="mt-8 p-3 px-3 flex flex-col items-span space-y-1">
+                <div class="text-small ml-3 mb-4 tracking-wide">Your events:</div>
+                <Button
+                    Text="Lethbridge"
+                    LeftIconClass="fa-building"
+                    Size="small"
+                    Color="ComponentStyle.ColorScheme.Transparent" />
+                <Button
+                    Text="Medicine Hat"
+                    LeftIconClass="fa-building"
+                    Size="small"
+                    Color="ComponentStyle.ColorScheme.Transparent" />
+                <Button
+                    Text="Red Deer"
+                    LeftIconClass="fa-building"
+                    Size="small"
+                    Color="ComponentStyle.ColorScheme.Transparent" />
+                <Button
+                    Text="Grand Praire"
+                    LeftIconClass="fa-building"
+                    Size="small"
+                    Color="ComponentStyle.ColorScheme.Transparent" />
+                <Seperator Css="mt-3! mb-3!"/>
+                <Button
+                    Text="Create New"
+                    LeftIconClass="fa-circle-plus"
+                    Size="xsmall"
+                    Color="ComponentStyle.ColorScheme.TransparentSecondary" />
+            </div>
+            
+        </div>
+        <div>
+            <div class="p-3 px-3">
+                <Button
+                    Text="Support"
+                    LeftIconClass="fa-circle-question"
+                    Color="ComponentStyle.ColorScheme.Transparent"
+                    Url="/support"/>
+                <Button
+                    Text="Logout"
+                    LeftIconClass="fa-left-from-bracket"
+                    Color="ComponentStyle.ColorScheme.Transparent"
+                    Url=""/>
+            </div>
+            <Seperator />
+            <div id="account-toggle" class="flex flex-col shrink-0 items-span justify-center p-3 px-3 pt-0">
+                <Button
+                    Text="Account"
+                    LeftIconClass="fa-users"
+                    DropdownItems="GetDropdownItems()"
+                    OnDropdownItemSelected="HandleDropdownSelection"
+                    DropdownPosition="Button.ButtonDropdownPosition.BottomRight"
+                    Color="ComponentStyle.ColorScheme.Transparent" />
+            </div>
+        </div>
+    </div>
+</div>
+
+@code 
+{
+    [Parameter] public bool Expanded { get; set; }
+    
+
+    private List<MenuItem> Items = new();
+
+    public class MenuItem()
+    {
+        public string Title { get; set; } = string.Empty;
+        public string SvgString { get; set; } = string.Empty;
+        public string Url { get; set; } = string.Empty;
+    }
+    
+    private List<Button.DropdownItem> GetDropdownItems()
+    {
+        return
+        [
+            new Button.DropdownItem("Settings", () => Task.Run(() => NavigationManager.NavigateTo("/settings"))),
+            new Button.DropdownItem("Settings", () => Task.Run(() => NavigationManager.NavigateTo("/settings"))),
+            new Button.DropdownItem("Settings", () => Task.Run(() => NavigationManager.NavigateTo("/settings"))),
+            new Button.DropdownItem("Settings", () => Task.Run(() => NavigationManager.NavigateTo("/settings"))),
+            
+        ];
+    }
+
+    private void HandleDropdownSelection(string selectedItem)
+    {
+        /*Logger.LogInformation($"You selected: {selectedItem}");*/
+    }
+
+    protected override void OnInitialized()
+    {
+        var menuItem = new MenuItem()
+        {
+            Title = "Dashboard",
+            SvgString = "fa-house",
+            Url = "dashboard"
+        };
+        Items.Add(menuItem);
+        menuItem = new MenuItem()
+        {
+            Title = "Events",
+            SvgString = "fa-clone",
+            Url = "events"
+        };
+        Items.Add(menuItem);
+        menuItem = new MenuItem()
+        {
+            Title = "Tickets",
+            SvgString = "fa-tickets-perforated",
+            Url = "tickets"
+        };
+        Items.Add(menuItem);
+        menuItem = new MenuItem()
+        {
+            Title = "Settings",
+            SvgString = "fa-gear",
+            Url = "settings"
+        };
+        Items.Add(menuItem);
+        menuItem = new MenuItem()
+        {
+            Title = "Team",
+            SvgString = "fa-users",
+            Url = "team"
+        };
+        Items.Add(menuItem);
+    }
+}

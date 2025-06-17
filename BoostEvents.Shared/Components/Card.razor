@@ -1,0 +1,24 @@
+<div class="@Css mx-auto max-w-7xl transition-all @(IsRounded ? "rounded-xl" : "") duration-300 @PaddingClass ease-in-out isolate backdrop-blur-3xl shadow-sm transition border border-@Theme.Settings.Colors.LightBorder dark:border-@Theme.Settings.Colors.DarkBorder @(HasLeftBorder ? "" : "border-l-0") @(HasRightBorder ? "" : "border-r-0") @(HasTopBorder ? "" : "border-t-0") @(HasBottomBorder ? "" : "border-b-0") lg:min-w-64 focus:outline-hidden  " tabindex="0">
+    @ChildContent
+</div>
+@*__DROPDOWNSIZES__min-w-80 w-max __DROPDOWNSIZES__
+
+
+
+*@
+
+@code {
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    [Parameter] public string Css { get; set; } = string.Empty;
+
+    [Parameter] public bool IsRounded { get; set; } = true;
+
+    [Parameter] public bool HasLeftBorder { get; set; } = true;
+    [Parameter] public bool HasRightBorder { get; set; } = true;
+    [Parameter] public bool HasTopBorder { get; set; } = true;
+    [Parameter] public bool HasBottomBorder { get; set; } = true;
+    [Parameter] public string PaddingClass { get; set; } = "p-7";
+}
