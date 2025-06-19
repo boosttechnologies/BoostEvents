@@ -9,7 +9,7 @@ public class ById : EndpointWithoutRequest<Data.Models.Customer>
 {
     public override void Configure()
     {
-        Get("/customers/{id}");
+        Get("api/customers/{id}");
         AllowAnonymous();
     }
 

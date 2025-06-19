@@ -8,7 +8,7 @@ public class All : EndpointWithoutRequest<List<Data.Models.Customer>>
 {
     public override void Configure()
     {
-        Get("/customers");
+        Get("api/customers");
         AllowAnonymous();
     }
 
