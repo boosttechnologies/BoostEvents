@@ -36,6 +36,17 @@ builder.Services.AddLogging(logging =>
 
 var app = builder.Build();
 
+app.UseWebAssemblyDebugging();
+    
+// Expose JSON spec
+app.MapOpenApi();                         // /openapi/v1.json
+
+// Provide interactive Swagger UI via NSwag
+app.UseSwaggerGen();                      // NSwag UI served under /swagger
+
+// Provide modern Scalar UI
+app.MapScalarApiReference();              // UI available under /scalar/v1
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
