@@ -2,7 +2,11 @@ using BoostEvents.Shared.Interfaces;
 using BoostEvents.Shared.Models;
 using BoostEvents.Web.Components;
 using BoostEvents.Shared.Services;
+using BoostEvents.Web.Data;
 using BoostEvents.Web.Services;
+using FastEndpoints;
+using FastEndpoints.Swagger;
+using Scalar.AspNetCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +21,12 @@ builder.Services.AddSingleton<IButtonService, ButtonService>();
 builder.Services.AddSingleton<IApplicationTheme, ApplicationThemeService>();
 builder.Services.AddSingleton<IComponentBuilder, ComponentBuilderService>();
 
+// Core API services
+builder.Services.AddFastEndpoints();
+builder.Services.AddOpenApi();               // .NET 9’s built-in OpenAPI JSON support
+
+// Data Access
+/*builder.Services.AddScoped<IDbConnectionFactory, SqlConnectionFactory>();*/
 
 builder.Services.AddLogging(logging =>
 {
@@ -30,6 +40,15 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseWebAssemblyDebugging();
+    
+    // Expose JSON spec
+    app.MapOpenApi();                         // /openapi/v1.json
+
+    // Provide interactive Swagger UI via NSwag
+    app.UseSwaggerGen();                      // NSwag UI served under /swagger
+
+    // Provide modern Scalar UI
+    app.MapScalarApiReference();              // UI available under /scalar/v1
 }
 else
 {
@@ -38,10 +57,14 @@ else
     app.UseHsts();
 }
 
+// Register all endpoints
+
 app.UseHttpsRedirection();
 
 app.UseStaticFiles();
 app.UseAntiforgery();
+
+app.UseFastEndpoints();
 
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode()
