@@ -22,7 +22,7 @@ public class CreateBusinessEndpoint(IBusinessRepository repo, ILogger<CreateBusi
             Name = req.Name,
         };
         await repo.InsertAsync(newBusiness);
-        logger.LogInformation("Event created: {Name}", newBusiness.Name);
+        logger.LogInformation("Business created: {Name}", newBusiness.Name);
         await SendOkAsync(ct);
     }
 }
