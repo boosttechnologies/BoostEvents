@@ -35,6 +35,16 @@ builder.Host.UseSerilog((ctx, services, config) =>
     });
 });*/
 
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policy =>
+    {
+        policy.AllowAnyOrigin() // for dev only — tighten this for production
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
+
 // Razor + Blazor hybrid
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents()
@@ -63,6 +73,7 @@ app.UseHttpsRedirection();
 
 // TODO Use CORS policy (needed for web clients)
 /*app.UseCors("DefaultPolicy");*/
+app.UseCors();
 
 // Cache static files (for Blazor assets)
 app.UseStaticFiles(new StaticFileOptions
