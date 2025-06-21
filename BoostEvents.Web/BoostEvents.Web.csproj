@@ -10,7 +10,18 @@
     <ItemGroup>
         <PackageReference Include="Dapper" Version="2.1.66" />
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.6" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.6" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.6">
+          <PrivateAssets>all</PrivateAssets>
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="Npgsql" Version="9.0.3" />
+        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
         <PackageReference Include="Scalar.AspNetCore" Version="2.4.19" />
+        <PackageReference Include="Serilog.AspNetCore" Version="9.0.0" />
+        <PackageReference Include="Serilog.Settings.Configuration" Version="9.0.0" />
+        <PackageReference Include="Serilog.Sinks.Console" Version="6.0.0" />
+        <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
         <PackageReference Include="System.Data.SqlClient" Version="4.9.0" />
         <ProjectReference Include="..\BoostEvents.Web.Client\BoostEvents.Web.Client.csproj"/>
         <PackageReference Include="FastEndpoints" Version="6.1.0" />
@@ -22,6 +33,10 @@
       <Content Include="..\.dockerignore">
         <Link>.dockerignore</Link>
       </Content>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Services\" />
     </ItemGroup>
 
 </Project>

@@ -1,82 +1,105 @@
-using BoostEvents.Shared.Interfaces;
-using BoostEvents.Shared.Models;
+using BoostEvents.Web;
 using BoostEvents.Web.Components;
-using BoostEvents.Shared.Services;
-using BoostEvents.Web.Data;
-using BoostEvents.Web.Services;
+using BoostEvents.Web.Infrastructure.Extensions;
 using FastEndpoints;
 using FastEndpoints.Swagger;
+using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
+using Serilog;
+
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.Console()
+    .WriteTo.File("logs/bootstrap.log", rollingInterval: RollingInterval.Day)
+    .CreateBootstrapLogger();
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// 🔧 Use Serilog after bootstrap
+builder.Host.UseSerilog((ctx, services, config) =>
+{
+    config.ReadFrom.Configuration(ctx.Configuration)
+          .ReadFrom.Services(services)
+          .Enrich.FromLogContext();
+});
+
+// TODO CORS for Render + optional frontend
+/*builder.Services.AddCors(options =>
+{
+    options.AddPolicy("DefaultPolicy", policy =>
+    {
+        policy.WithOrigins("https://yourdomain.com", "https://yourapp.onrender.com")
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});*/
+
+// Razor + Blazor hybrid
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents()
     .AddInteractiveWebAssemblyComponents();
 
-// Add device-specific services used by the BoostEvents.Shared project
-builder.Services.AddSingleton<IFormFactor, FormFactor>();
-builder.Services.AddSingleton<IButtonService, ButtonService>();
-builder.Services.AddSingleton<IApplicationTheme, ApplicationThemeService>();
-builder.Services.AddSingleton<IComponentBuilder, ComponentBuilderService>();
+// Core Boost setup
+builder.Services.AddBoostEventsCoreUi();
 
-// Core API services
-builder.Services.AddFastEndpoints();
-builder.Services.AddOpenApi();               // .NET 9’s built-in OpenAPI JSON support
+builder.Services.AddBoostEventsDataAccess(builder.Configuration);
+builder.Services.AddBoostEventsCoreApi();
 
-// Data Access
-/*builder.Services.AddScoped<IDbConnectionFactory, SqlConnectionFactory>();*/
-
-builder.Services.AddLogging(logging =>
-{
-    logging.SetMinimumLevel(LogLevel.Information);  // Set appropriate log level
-    logging.AddConsole();  // Optional: Adds console logging in dev mode
-});
+builder.Services.AddDataProtection()
+    .PersistKeysToFileSystem(new DirectoryInfo("/app/dataprotection-keys"))
+    .SetApplicationName("BoostEvents");
 
 var app = builder.Build();
 
-app.UseWebAssemblyDebugging();
-    
-// Expose JSON spec
-app.MapOpenApi();                         // /openapi/v1.json
+// TODO Reverse proxy compatibility (Render)
+/*app.UseForwardedHeaders(new ForwardedHeadersOptions
+{
+    ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+});*/
 
-// Provide interactive Swagger UI via NSwag
-app.UseSwaggerGen();                      // NSwag UI served under /swagger
+// Enforce HTTPS redirect (Render terminates TLS)
+app.UseHttpsRedirection();
 
-// Provide modern Scalar UI
-app.MapScalarApiReference();              // UI available under /scalar/v1
+// TODO Use CORS policy (needed for web clients)
+/*app.UseCors("DefaultPolicy");*/
 
-// Configure the HTTP request pipeline.
+// Cache static files (for Blazor assets)
+app.UseStaticFiles(new StaticFileOptions
+{
+    OnPrepareResponse = ctx =>
+    {
+        ctx.Context.Response.Headers.Append("Cache-Control", "public,max-age=604800");
+    }
+});
+
+app.UseAntiforgery();
+
+// Endpoint routing
+app.UseFastEndpoints();
+
+// Error handling
 if (app.Environment.IsDevelopment())
 {
     app.UseWebAssemblyDebugging();
-    
-    // Expose JSON spec
-    app.MapOpenApi();                         // /openapi/v1.json
-
-    // Provide interactive Swagger UI via NSwag
-    app.UseSwaggerGen();                      // NSwag UI served under /swagger
-
-    // Provide modern Scalar UI
-    app.MapScalarApiReference();              // UI available under /scalar/v1
+    app.MapOpenApi();
+    app.UseSwaggerGen();
+    app.MapScalarApiReference();
 }
 else
 {
+    app.MapOpenApi(); // /openapi/v1.json
+    app.UseSwaggerGen(); // /swagger
+    app.MapScalarApiReference(); // /scalar/v1
     app.UseExceptionHandler("/Error", createScopeForErrors: true);
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
-// Register all endpoints
 
-app.UseHttpsRedirection();
 
-app.UseStaticFiles();
-app.UseAntiforgery();
+app.MapStaticAssets();
 
-app.UseFastEndpoints();
-
+// Blazor hybrid UI
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode()
     .AddInteractiveWebAssemblyRenderMode()

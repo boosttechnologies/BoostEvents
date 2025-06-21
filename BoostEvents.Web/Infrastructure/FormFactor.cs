@@ -1,6 +1,6 @@
 using BoostEvents.Shared.Services;
 
-namespace BoostEvents.Web.Services;
+namespace BoostEvents.Web.Infrastructure;
 
 public class FormFactor : IFormFactor
 {
