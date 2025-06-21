@@ -92,7 +92,7 @@ else
     app.UseSwaggerGen(); // /swagger
     app.MapScalarApiReference(); // /scalar/v1
     app.UseExceptionHandler("/Error", createScopeForErrors: true);
-    app.UseHsts();
+    /*app.UseHsts();*/
 }
 
 
