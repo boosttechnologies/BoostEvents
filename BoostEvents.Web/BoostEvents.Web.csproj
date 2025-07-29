@@ -43,7 +43,6 @@
       <Folder Include="Features\Businesses\Validators\" />
       <Folder Include="Features\SaleItems\" />
       <Folder Include="logs\" />
-      <Folder Include="Services\" />
     </ItemGroup>
 
 </Project>
