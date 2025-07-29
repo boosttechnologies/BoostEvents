@@ -1,0 +1,83 @@
+@page "/logs"
+@using System.Text.Json
+<h3>Logs</h3>
+
+<div class="p-4">
+    <h2 class="text-2xl font-bold mb-4">Application Logs</h2>
+
+    <div class="mb-4">
+        <input @bind="SearchTerm" placeholder="Search..." class="border p-2 w-full rounded" />
+    </div>
+
+    <div class="overflow-auto max-h-[80vh]">
+        <table class="table-auto w-full text-sm">
+            <thead class="bg-gray-100 sticky top-0">
+                <tr>
+                    <th class="p-2 text-left">Timestamp</th>
+                    <th class="p-2 text-left">Level</th>
+                    <th class="p-2 text-left">Message</th>
+                    <th class="p-2 text-left">Trace ID</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var entry in _logs)
+                {
+                    <tr class="border-b">
+                        <td class="p-2">@entry.Timestamp</td>
+                        <td class="p-2">@entry.Level</td>
+                        <td class="p-2">@entry.Message</td>
+                        <td class="p-2">@entry.TraceId</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+@code {
+    private string SearchTerm = string.Empty;
+    private List<LogEntry> _logs = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var filePath = Path.Combine(AppContext.BaseDirectory, "logs", "app20250729.log");
+        if (File.Exists(filePath))
+        {
+            var lines = await File.ReadAllLinesAsync(filePath);
+            foreach (var line in lines)
+            {
+                try
+                {
+                    var doc = JsonDocument.Parse(line);
+                    var root = doc.RootElement;
+                    _logs.Add(new LogEntry
+                    {
+                        Timestamp = root.GetProperty("Timestamp").ToString(),
+                        Level = root.GetProperty("Level").ToString(),
+                        Message = root.GetProperty("MessageTemplate").ToString(),
+                        TraceId = root.TryGetProperty("TraceId", out var trace) ? trace.ToString() : ""
+                    });
+                }
+                catch
+                {
+                    // ignored
+                }
+            }
+        }
+    }
+
+    private IEnumerable<LogEntry> FilteredLogs => _logs
+        .Where(l => string.IsNullOrWhiteSpace(SearchTerm) ||
+                    l.Message.Contains(SearchTerm, StringComparison.OrdinalIgnoreCase) ||
+                    l.Level.Contains(SearchTerm, StringComparison.OrdinalIgnoreCase) ||
+                    l.TraceId.Contains(SearchTerm, StringComparison.OrdinalIgnoreCase))
+        .Reverse();
+
+    private class LogEntry
+    {
+        public string Timestamp { get; set; }
+        public string Level { get; set; }
+        public string Message { get; set; }
+        public string TraceId { get; set; }
+    }
+}

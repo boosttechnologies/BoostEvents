@@ -1,3 +1,5 @@
+using BoostEvents.Web.Application.Interfaces;
+
 namespace BoostEvents.Web.Infrastructure.Db;
 
 public class BoostIdGenerator : IBoostIdGenerator

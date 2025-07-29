@@ -1,22 +1,20 @@
-using BoostEvents.Web;
 using BoostEvents.Web.Components;
 using BoostEvents.Web.Infrastructure.Extensions;
 using FastEndpoints;
 using FastEndpoints.Swagger;
 using Microsoft.AspNetCore.DataProtection;
-using Microsoft.AspNetCore.HttpOverrides;
-using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 using Serilog;
 
-Log.Logger = new LoggerConfiguration()
+/*Log.Logger = new LoggerConfiguration()
     .WriteTo.Console()
     .WriteTo.File("logs/bootstrap.log", rollingInterval: RollingInterval.Day)
-    .CreateBootstrapLogger();
+    .CreateBootstrapLogger();*/
 
 var builder = WebApplication.CreateBuilder(args);
 
 // 🔧 Use Serilog after bootstrap
+//TODO - UI FOR VIEWING LOGS
 builder.Host.UseSerilog((ctx, services, config) =>
 {
     config.ReadFrom.Configuration(ctx.Configuration)
@@ -86,6 +84,7 @@ app.UseStaticFiles(new StaticFileOptions
 
 app.UseAntiforgery();
 
+app.UseMiddleware<GlobalExceptionMiddleware>();
 // Endpoint routing
 app.UseFastEndpoints();
 

@@ -1,7 +1,9 @@
 using System.Data;
 using BoostEvents.Shared.Interfaces;
 using BoostEvents.Shared.Services;
+using BoostEvents.Web.Application.Interfaces;
 using BoostEvents.Web.Infrastructure.Db;
+using BoostEvents.Web.Infrastructure.Persistence;
 using FastEndpoints;
 using FastEndpoints.Swagger;
 using Microsoft.EntityFrameworkCore;
@@ -47,7 +49,7 @@ public static class ServiceCollectionExtensions
         });
         
         // Repositories (Dapper-based)
-        services.AddScoped<IBusinessRepository, BusinessRepository>();
+        services.AddScoped<IBusinessRepo, BusinessRepo>();
         services.AddScoped<ITenantRepository, TenantRepository>();
         
        services.AddDbContext<BoostEventsDbContext>(options =>
@@ -59,6 +61,7 @@ public static class ServiceCollectionExtensions
     {
         // TODO - Work into code
         services.AddScoped<ITenantInfo, TenantInfo>();
+        services.AddScoped<SerilogEnrichmentMiddleware>();
         services.AddFastEndpoints();
         services.SwaggerDocument(); // configured via appsettings.json (v6+)
         services.AddOpenApi(); // .NET 9’s built-in OpenAPI JSON support

@@ -1,4 +1,4 @@
-namespace BoostEvents.Web.Infrastructure.Db;
+namespace BoostEvents.Web.Application.Interfaces;
 
 public interface IBoostIdGenerator
 {

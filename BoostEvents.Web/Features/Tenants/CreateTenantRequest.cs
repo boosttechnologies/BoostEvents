@@ -1,4 +1,4 @@
-namespace BoostEvents.Web.Features.Businesses;
+namespace BoostEvents.Web.Features.Tenants;
 
 public class CreateTenantRequest
 {

@@ -1,3 +1,5 @@
+using BoostEvents.Web.Application.Interfaces;
+
 namespace BoostEvents.Web.Infrastructure.Db;
 
 public class TenantInfo : ITenantInfo
@@ -13,6 +15,6 @@ public class TenantInfo : ITenantInfo
         else
             throw new UnauthorizedAccessException("Invalid or missing tenant ID");*/
 
-        TenantId = new Guid("1e9568be-71d1-4b11-ae92-b3030168629c");
+        TenantId = new Guid("2d837758-d6a7-4cb9-8a6a-b3290135fd8a");
     }
 }

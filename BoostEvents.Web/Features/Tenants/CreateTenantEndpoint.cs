@@ -1,8 +1,10 @@
+using BoostEvents.Web.Application.Interfaces;
+using BoostEvents.Web.Domain;
+using BoostEvents.Web.Features.Businesses;
 using BoostEvents.Web.Infrastructure.Db;
-using BoostEvents.Web.Models;
 using FastEndpoints;
 
-namespace BoostEvents.Web.Features.Businesses;
+namespace BoostEvents.Web.Features.Tenants;
 
 public class CreateTenantEndpoint(ITenantRepository repo, ILogger<CreateBusinessEndpoint> logger)
     : Endpoint<CreateTenantRequest, EmptyResponse>

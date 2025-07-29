@@ -1,5 +1,6 @@
 using System.Data;
-using BoostEvents.Web.Models;
+using BoostEvents.Web.Application.Interfaces;
+using BoostEvents.Web.Domain;
 using Dapper;
 
 namespace BoostEvents.Web.Infrastructure.Db;
@@ -8,8 +9,12 @@ public class TenantRepository(IDbConnection _db, IBoostIdGenerator _boostIdGener
 {
     public Task InsertAsync(Tenant tenant)
     {
-        var sql = "INSERT INTO tenants (id, name) VALUES (@Id, @Name)";
+        const string sql = "INSERT INTO tenants (id, name, slug, created_utc, is_active, is_deleted) VALUES (@Id, @Name, @Slug, @CreatedUtc, @IsActive, @IsDeleted);";
         tenant.Id = _boostIdGenerator.New();
+        tenant.Slug = tenant.Name; // todo -> Create unique slug
+        tenant.CreatedUtc = DateTime.UtcNow;
+        tenant.IsActive = true;
+        tenant.IsDeleted = false;
         return _db.ExecuteAsync(sql, tenant);
     }
 }
