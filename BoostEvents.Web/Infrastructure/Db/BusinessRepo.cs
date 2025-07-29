@@ -5,14 +5,14 @@ using Dapper;
 
 namespace BoostEvents.Web.Infrastructure.Db;
 
-public class BusinessRepo(IDbConnection _db, ITenantInfo _tenant, IBoostIdGenerator _boostIdGenerator, ILogger<BusinessRepo> _logger) : IBusinessRepo
+public class BusinessRepo(IDbConnection _db, IUserInfo user, IBoostIdGenerator _boostIdGenerator, ILogger<BusinessRepo> _logger) : IBusinessRepo
 {
     public async Task CreateAsync(Business b)
     {
         try
         {
-            b.Id = Guid.NewGuid();
-            b.TenantId = _tenant.TenantId;
+            b.Id = _boostIdGenerator.New();
+            b.TenantId = user.TenantId;
             b.CreatedUtc = DateTime.UtcNow;
             b.IsDeleted = false;
 
@@ -51,9 +51,18 @@ public class BusinessRepo(IDbConnection _db, ITenantInfo _tenant, IBoostIdGenera
     {
         try
         {
-            const string sql = "SELECT * FROM businesses WHERE id = @Id AND is_deleted = false";
+            const string sql = """
+                               SELECT 
+                                   id AS Id,
+                                   tenant_id AS TenantId,
+                                   name AS Name,
+                                   modified_utc AS CreatedUtc
+                               FROM businesses WHERE id = @Id AND is_deleted = false
+                               """;
+            
             _logger.LogInformation("Reading business by Id: {BusinessId}", id);
-            return await _db.QueryFirstOrDefaultAsync<Business>(sql, new { Id = id });
+            var test = await _db.QueryFirstOrDefaultAsync<Business>(sql, new { Id = id });
+            return test;
         }
         catch (Exception e)
         {
@@ -68,14 +77,14 @@ public class BusinessRepo(IDbConnection _db, ITenantInfo _tenant, IBoostIdGenera
         {
             const string sql = """
                                UPDATE businesses
-                               SET name = @Name
+                               SET name = @Name, modified_utc = @ModifiedUtc
                                WHERE id = @Id AND tenant_id = @TenantId AND is_deleted = false;
                                """;
 
             if (b.TenantId == Guid.Empty)
-                b.TenantId = _tenant.TenantId;
+                b.TenantId = user.TenantId;
 
-            var rowsAffected = await _db.ExecuteAsync(sql, new { b.Name, b.Id, b.TenantId });
+            var rowsAffected = await _db.ExecuteAsync(sql, new { b.Name, b.Id, b.TenantId, b.ModifiedUtc });
             if (rowsAffected == 0)
                 _logger.LogWarning("No business found to update. ID: {Id}, TenantId: {TenantId}", b.Id, b.TenantId);
             else
@@ -103,7 +112,7 @@ public class BusinessRepo(IDbConnection _db, ITenantInfo _tenant, IBoostIdGenera
                                  AND is_deleted = false;
                                """;
             
-            var rowsAffected = await _db.ExecuteAsync(sql, new { Id = id, DeleteTime = deleteTime, _tenant.TenantId });
+            var rowsAffected = await _db.ExecuteAsync(sql, new { Id = id, DeleteTime = deleteTime, user.TenantId });
             if (rowsAffected == 0)
                 _logger.LogWarning("No business found to soft delete. ID: {Id}", id);
             else

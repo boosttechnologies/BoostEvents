@@ -5,7 +5,7 @@ using FastEndpoints;
 
 namespace BoostEvents.Web.Features.Businesses;
 
-public class GetBusinessesEndpoint(IBusinessRepo repo, ILogger<GetBusinessesEndpoint> logger, ITenantInfo _tenant) : EndpointWithoutRequest<List<Business>>
+public class GetBusinessesEndpoint(IBusinessRepo _repo, ILogger<GetBusinessesEndpoint> _logger, IUserInfo user) : EndpointWithoutRequest<List<Business>>
 {
     public override void Configure()
     {
@@ -15,8 +15,8 @@ public class GetBusinessesEndpoint(IBusinessRepo repo, ILogger<GetBusinessesEndp
 
     public override async Task HandleAsync(CancellationToken ct)
     {
-        var businesses = (await repo.ReadAsync(_tenant.TenantId)).ToList();
-        logger.LogInformation("Returning {Count} businesses", businesses.Count);
+        var businesses = (await _repo.ReadAsync(user.TenantId)).ToList();
+        _logger.LogInformation("Returning {Count} businesses", businesses.Count);
         await SendAsync(businesses, cancellation: ct);
     }
 }

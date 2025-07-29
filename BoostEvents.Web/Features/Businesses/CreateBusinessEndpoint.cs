@@ -6,7 +6,7 @@ using FastEndpoints;
 
 namespace BoostEvents.Web.Features.Businesses;
 
-public class CreateBusinessEndpoint(IBusinessRepo repo,  ILogger<CreateBusinessEndpoint> logger) : Endpoint<CreateBusinessRequest, EmptyResponse>
+public class CreateBusinessEndpoint(IBusinessRepo _repo,  ILogger<CreateBusinessEndpoint> _logger) : Endpoint<CreateBusinessRequest, EmptyResponse>
 {
     public override void Configure()
     {
@@ -17,7 +17,7 @@ public class CreateBusinessEndpoint(IBusinessRepo repo,  ILogger<CreateBusinessE
 
     public override async Task HandleAsync(CreateBusinessRequest req, CancellationToken ct)
     {
-        await repo.CreateAsync(new Business { Name = req.Name });
+        await _repo.CreateAsync(new Business { Name = req.Name });
         await SendAsync(new EmptyResponse(), cancellation: ct);
     }
 }

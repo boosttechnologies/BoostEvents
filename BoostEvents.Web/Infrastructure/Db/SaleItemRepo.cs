@@ -5,57 +5,148 @@ using Dapper;
 
 namespace BoostEvents.Web.Infrastructure.Db;
 
-public class SaleItemRepo(IDbConnection db, ITenantInfo _tenant, ILogger<SaleItemRepo> logger) : ISaleItemRepo
+public class SaleItemRepo(IDbConnection _db, IUserInfo _user, ILogger<SaleItemRepo> _logger, IBoostIdGenerator _boostIdGenerator) : ISaleItemRepo
 {
-    public async Task CreateAsync(SaleItem saleItem)
+
+    public async Task CreateAsync(SaleItem b)
     {
-        saleItem.Id = Guid.NewGuid();
-        saleItem.TenantId = _tenant.TenantId;
-        saleItem.Description = "";
-        saleItem.CreatedUtc = DateTime.UtcNow;
-        saleItem.IsDeleted = false;
+        try
+        {
+            b.Id = _boostIdGenerator.New();
+            b.TenantId = _user.TenantId;
+            b.BusinessInstanceId = _user.BusinessInstanceId;
+            b.CreatedUtc = DateTime.UtcNow;
+            b.IsDeleted = false;
+            b.IsVisibleToPublic = false;
+            
+            const string sql = @"INSERT INTO sale_items (id, tenant_id, business_instance_id, name, created_utc, is_deleted, is_visible_to_public, description)
+                             VALUES (@Id, @TenantId, @BusinessInstanceId, @Name, @CreatedUtc, @IsDeleted, @IsVisibleToPublic, @Description);";
+            
+            var rowsAffected = await _db.ExecuteAsync(sql, b);
 
-        const string sql = """
-            INSERT INTO sale_items (id, tenant_id, name, description, is_deleted, created_utc)
-            VALUES (@Id, @TenantId, @Name, @Description,@IsDeleted, @CreatedUtc)
-        """;
-
-        await db.ExecuteAsync(sql, saleItem);
-        logger.LogInformation("SaleItem created with ID {Id}", saleItem.Id);
+            if (rowsAffected == 0)
+               _logger.LogError("Creating business failed: {@Business}", b);
+            else
+               _logger.LogInformation("Created business successfully: {@Business}", b);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Error creating business: {@Business}", b);
+        }
     }
 
-    public async Task<IEnumerable<SaleItem>> ReadAsync(Guid tenantId)
+    public Task<IEnumerable<SaleItem>> ReadAsync(Guid tenantId)
     {
-        const string sql = "SELECT * FROM sale_items WHERE tenant_id = @TenantId AND is_deleted = false";
-        return await db.QueryAsync<SaleItem>(sql, new { _tenant.TenantId });
+        throw new NotImplementedException();
     }
 
-    public async Task<SaleItem?> ReadByIdAsync(Guid id)
+    public Task<SaleItem?> ReadByIdAsync(Guid id)
     {
-        const string sql = "SELECT * FROM sale_items WHERE id = @Id AND tenant_id = @TenantId AND is_deleted = false";
-        return await db.QuerySingleOrDefaultAsync<SaleItem>(sql, new { Id = id, _tenant.TenantId });
+        throw new NotImplementedException();
     }
 
-    public async Task UpdateAsync(SaleItem saleItem)
+    public Task UpdateAsync(SaleItem entity)
     {
-        /*const string sql = """
-            UPDATE sale_items SET name = @Name, description = @Description, price = @Price, sale_type = @SaleType,
-            time_slot_start_utc = @TimeSlotStartUtc, time_slot_end_utc = @TimeSlotEndUtc, parent_id = @ParentId
-            WHERE id = @Id AND tenant_id = @TenantId AND is_deleted = false
-        """;
+        throw new NotImplementedException();
+    }
 
-        await db.ExecuteAsync(sql, saleItem);*/
-        logger.LogInformation("SaleItem updated: {Id}", saleItem.Id);
+    public Task SoftDeleteAsync(Guid id)
+    {
+        throw new NotImplementedException();
+    }
+
+    /*public async Task<IEnumerable<Business>> ReadAsync(Guid tenantId)
+    {
+        try
+        {
+            const string sql = "SELECT * FROM businesses WHERE tenant_id = @TenantId AND is_deleted = false ORDER BY created_utc DESC";
+            _logger.LogInformation("Reading businesses for TenantId: {TenantId}", tenantId);
+            return await _db.QueryAsync<Business>(sql, new { TenantId = tenantId });
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Error reading all businesses by tenant.");
+            return [];
+        }
+    }
+
+    public async Task<Business?> ReadByIdAsync(Guid id)
+    {
+        try
+        {
+            const string sql = """
+                               SELECT 
+                                   id AS Id,
+                                   tenant_id AS TenantId,
+                                   name AS Name,
+                                   modified_utc AS CreatedUtc
+                               FROM businesses WHERE id = @Id AND is_deleted = false
+                               """;
+            
+            _logger.LogInformation("Reading business by Id: {BusinessId}", id);
+            var test = await _db.QueryFirstOrDefaultAsync<Business>(sql, new { Id = id });
+            return test;
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Error reading business by Id: {BusinessId}", id);
+            return null;
+        }
+    }
+    
+    public async Task UpdateAsync(Business b)
+    {
+        try
+        {
+            const string sql = """
+                               UPDATE businesses
+                               SET name = @Name, modified_utc = @ModifiedUtc
+                               WHERE id = @Id AND tenant_id = @TenantId AND is_deleted = false;
+                               """;
+
+            if (b.TenantId == Guid.Empty)
+                b.TenantId = user.TenantId;
+
+            var rowsAffected = await _db.ExecuteAsync(sql, new { b.Name, b.Id, b.TenantId, b.ModifiedUtc });
+            if (rowsAffected == 0)
+                _logger.LogWarning("No business found to update. ID: {Id}, TenantId: {TenantId}", b.Id, b.TenantId);
+            else
+                _logger.LogInformation("Updating business: {@Business}", b);
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Error updating business: {@Business}", b);
+        }
+        
     }
 
     public async Task SoftDeleteAsync(Guid id)
     {
-        const string sql = """
-            UPDATE sale_items SET is_deleted = true, deleted_utc = @Now
-            WHERE id = @Id AND tenant_id = @TenantId AND is_deleted = false
-        """;
-
-        await db.ExecuteAsync(sql, new { Id = id, _tenant.TenantId, Now = DateTime.UtcNow });
-        logger.LogInformation("SaleItem soft-deleted: {Id}", id);
-    }
+        try
+        {
+            var deleteTime = DateTime.UtcNow;
+            
+            const string sql = """
+                               UPDATE businesses
+                               SET is_deleted = true,
+                                   deleted_utc = @DeleteTime
+                               WHERE id = @Id
+                                 AND tenant_id = @TenantId
+                                 AND is_deleted = false;
+                               """;
+            
+            var rowsAffected = await _db.ExecuteAsync(sql, new { Id = id, DeleteTime = deleteTime, user.TenantId });
+            if (rowsAffected == 0)
+                _logger.LogWarning("No business found to soft delete. ID: {Id}", id);
+            else
+                _logger.LogInformation("Soft delete business completed ID: {BusinessId}", id);
+            
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e, "Error soft deleting business: {@BusinessId}", id);
+        }
+    }*/
+    
+    
 }

@@ -1,20 +1,8 @@
-using System.ComponentModel.DataAnnotations;
 using BoostEvents.Web.Application.Interfaces;
 using BoostEvents.Web.Features.Businesses.Requests;
-using BoostEvents.Web.Infrastructure.Db;
 using FastEndpoints;
-using Microsoft.AspNetCore.Mvc;
 
 namespace BoostEvents.Web.Features.Businesses;
-
-public class UpdateBusinessRequest
-{
-    [FromRoute]
-    public Guid Id { get; set; }
-
-    [Required, MaxLength(255)]
-    public string Name { get; set; } = default!;
-}
 
 public class UpdateBusinessEndpoint(IBusinessRepo repo, ILogger<UpdateBusinessEndpoint> logger)
     : Endpoint<UpdateBusinessRequest>

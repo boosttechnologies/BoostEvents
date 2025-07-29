@@ -41,7 +41,10 @@
       <Folder Include="Application\Services\" />
       <Folder Include="Features\Businesses\Responses\" />
       <Folder Include="Features\Businesses\Validators\" />
-      <Folder Include="Features\SaleItems\" />
+      <Folder Include="Features\BusinessInstances\Responses\" />
+      <Folder Include="Features\BusinessInstances\Validators\" />
+      <Folder Include="Features\SaleItems\Responses\" />
+      <Folder Include="Features\SaleItems\Validators\" />
       <Folder Include="logs\" />
     </ItemGroup>
 

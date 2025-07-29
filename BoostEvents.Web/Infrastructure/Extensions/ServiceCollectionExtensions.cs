@@ -49,8 +49,10 @@ public static class ServiceCollectionExtensions
         });
         
         // Repositories (Dapper-based)
+        services.AddScoped<ITenantRepository, TenantRepo>();
         services.AddScoped<IBusinessRepo, BusinessRepo>();
-        services.AddScoped<ITenantRepository, TenantRepository>();
+        services.AddScoped<IBusinessInstanceRepo, BusinessInstanceRepo>();
+        services.AddScoped<ISaleItemRepo, SaleItemRepo>();
         
        services.AddDbContext<BoostEventsDbContext>(options =>
             options.UseNpgsql(config.GetConnectionString("DefaultConnection")));
@@ -60,7 +62,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddBoostEventsCoreApi(this IServiceCollection services)
     {
         // TODO - Work into code
-        services.AddScoped<ITenantInfo, TenantInfo>();
+        services.AddScoped<IUserInfo, UserInfo>();
         services.AddScoped<SerilogEnrichmentMiddleware>();
         services.AddFastEndpoints();
         services.SwaggerDocument(); // configured via appsettings.json (v6+)
